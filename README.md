@@ -8,3 +8,15 @@ TODO...
 
 ## Usage
 TODO...
+
+## Examples
+
+`tabley scale c-major`
+...
+
+`tabley scale "g flat minor harmonic -b`
+...
+
+GFLATMINORHARMONIC
+-> 
+G♭MINORHARMONIC
