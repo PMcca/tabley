@@ -24,23 +24,43 @@ const (
 	Gs_Af
 
 	AStr     string = "A"
-	As_BfStr        = "A#/B♭"
-	BStr            = "B"
-	CStr            = "C"
-	Cs_DfStr        = "C#/D♭"
-	DStr            = "D"
-	Ds_EfStr        = "D#/E♭"
-	EStr            = "E"
-	FStr            = "F"
-	Fs_GfStr        = "F#/G♭"
-	GStr            = "G"
-	Gs_AfStr        = "G#/A♭"
+	As_BfStr        = "A#"
+	//As_BfStr        = "A#/B♭"
+	BStr     = "B"
+	CStr     = "C"
+	Cs_DfStr = "C#"
+	//Cs_DfStr        = "C#/D♭"
+	DStr     = "D"
+	Ds_EfStr = "D#"
+	//Ds_EfStr        = "D#/E♭"
+	EStr     = "E"
+	FStr     = "F"
+	Fs_GfStr = "F#"
+	//Fs_GfStr        = "F#/G♭"
+	GStr     = "G"
+	Gs_AfStr = "G#"
+	//Gs_AfStr        = "G#/A♭"
 )
 
+// Map of string -> Note
 var stringToNote = map[string]Note{
 	"A":  A,
 	"A#": As_Bf,
 	"B♭": As_Bf,
+	"B":  B,
+	"C":  C,
+	"C#": Cs_Df,
+	"D♭": Cs_Df,
+	"D":  D,
+	"D#": Ds_Ef,
+	"E♭": Ds_Ef,
+	"E":  E,
+	"F":  F,
+	"F#": Fs_Gf,
+	"G♭": Fs_Gf,
+	"G":  G,
+	"G#": Gs_Af,
+	"A♭": Gs_Af,
 }
 
 // Map of note -> string
@@ -66,6 +86,26 @@ func NoteFromString(s string) (Note, error) {
 		return Unknown, fmt.Errorf("no note found for input %s", s)
 	}
 	return n, nil
+}
+
+// NotesFromString takes a string representing a consecutive list of notes and returns a slice of corresponding Notes.
+func NotesFromString(s string) ([]Note, error) {
+	var notes []Note
+	for _, n := range s {
+		p := string(n)
+		note, ok := stringToNote[p]
+		if !ok {
+			return nil, fmt.Errorf("no note found for input %s", s)
+		}
+		notes = append(notes, note)
+	}
+
+	return notes, nil
+}
+
+// NoteFromFretNumber takes a fret number and string tuning and returns the corresponding note for that fret.
+func NoteFromFretNumber(fret uint8, tuning Note) Note {
+	return tuning.Add(fret)
 }
 
 // Add adds a given interval to a note. If the result is 0, 12 (G#/A♭) is returned.
