@@ -1,7 +1,6 @@
 package music_test
 
 import (
-	"fmt"
 	"github.com/stretchr/testify/require"
 	"tabley/music"
 	"testing"
@@ -55,19 +54,14 @@ func TestNewScale(t *testing.T) {
 		},
 	}
 
-	for name, testCase := range testCases {
-		tc := testCase
-
+	for name, tc := range testCases {
 		t.Run(name, func(t *testing.T) {
 			t.Parallel()
 
 			actual, err := music.NewScale(tc.scaleName, tc.rootNote, tc.intervalPattern, tc.isFlat)
 
-			fmt.Println(actual.Notes)
-			fmt.Println(tc.expected.Notes)
 			tc.errAssert(t, err)
 			require.Equal(t, tc.expected, actual)
-
 		})
 	}
 }
@@ -117,9 +111,7 @@ func TestIntervalPatternFromString(t *testing.T) {
 		},
 	}
 
-	for name, testCase := range testCases {
-		tc := testCase
-
+	for name, tc := range testCases {
 		t.Run(name, func(t *testing.T) {
 			t.Parallel()
 

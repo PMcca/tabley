@@ -1,6 +1,6 @@
 package music
 
-// Tab represents a musical tablature, consisting of a ordered collection of rows.
+// Tab represents a musical tablature, consisting of an ordered collection of rows.
 type Tab struct {
 	Rows []Row
 }
@@ -15,20 +15,20 @@ type Row struct {
 // The returned tab will be in reverse order from the given tuning. e.g. tuning = EADGBE will return a tab with rows
 // in the order EBGDAE.
 func NewTabFromString(rawTab []string, tuning []Note) Tab {
-	t := Tab{}
+	tab := Tab{}
 	notesIndex := len(tuning) - 1
-	for _, r := range rawTab {
+	for _, rawRow := range rawTab {
 		if notesIndex < 0 {
 			notesIndex = len(tuning) - 1
 		}
 
 		row := Row{
-			Data:   r,
+			Data:   rawRow,
 			Tuning: tuning[notesIndex],
 		}
-		t.Rows = append(t.Rows, row)
+		tab.Rows = append(tab.Rows, row)
 		notesIndex--
 	}
 
-	return t
+	return tab
 }

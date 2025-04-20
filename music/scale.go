@@ -66,7 +66,7 @@ func NewScale(name string, root Note, intervals IntervalPattern, isFlat bool) (*
 
 	scaleNamePretty, ok := nameToPretty[name]
 	if !ok {
-		return nil, fmt.Errorf("no pretty name found for scale %s", name)
+		return nil, fmt.Errorf("no scale found for given name %s", name)
 	}
 
 	return &Scale{

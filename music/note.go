@@ -7,7 +7,7 @@ import (
 // Note represents a single musical note.
 type Note uint8
 
-// Ordered enumeration of notes. Sharps and Flats share the same placement.
+// Ordered enumeration of notes. Sharps and Flats share the same placement, denoted by <Note>s_<Note>_f for sharp & flat.
 const (
 	Unknown Note = iota
 	A
@@ -89,13 +89,12 @@ func NoteFromString(s string) (Note, error) {
 }
 
 // NotesFromString takes a string representing a consecutive list of notes and returns a slice of corresponding Notes.
-func NotesFromString(s string) ([]Note, error) {
-	var notes []Note
-	for _, n := range s {
-		p := string(n)
-		note, ok := stringToNote[p]
+func NotesFromString(str string) ([]Note, error) {
+	notes := make([]Note, 0, len(str))
+	for _, n := range str {
+		note, ok := stringToNote[string(n)]
 		if !ok {
-			return nil, fmt.Errorf("no note found for input %s", s)
+			return nil, fmt.Errorf("no note found for input %s", str)
 		}
 		notes = append(notes, note)
 	}

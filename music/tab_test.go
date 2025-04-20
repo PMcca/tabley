@@ -62,13 +62,11 @@ func TestNewTabFromString(t *testing.T) {
 		},
 	}
 
-	for name, testCase := range testCases {
-		tc := testCase
+	for name, tc := range testCases {
 		t.Run(name, func(t *testing.T) {
 			t.Parallel()
 
 			actual := music.NewTabFromString(tc.rawRows, tc.tuning)
-
 			require.Equal(t, tc.expected, actual)
 		})
 	}

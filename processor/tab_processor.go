@@ -18,15 +18,21 @@ func (t TabProcessor) BuildScale() {
 	panic("implement me")
 }
 
+func NewTabProcessor() TabProcessor {
+	return TabProcessor{
+		builder: strings.Builder{},
+	}
+}
+
 // ConvertTab converts all fret numbers to their corresponding notes, returning the same tab as a string.
 func (t TabProcessor) ConvertTab(tabInput []string, tuningInput string) (string, error) {
 	if err := validateInput(tabInput, tuningInput); err != nil {
-		return "", err
+		return "", fmt.Errorf("invalid input: %w", err)
 	}
 
 	tuning, err := music.NotesFromString(tuningInput)
 	if err != nil {
-		return "", errors.Wrapf(err, "failed to parse tuning from input %s", tuningInput)
+		return "", fmt.Errorf("failed to parse tuning from input %s: %w", tuningInput, err)
 	}
 
 	tab := music.NewTabFromString(tabInput, tuning)
@@ -53,10 +59,19 @@ func (t TabProcessor) ConvertTab(tabInput []string, tuningInput string) (string,
 	return t.builder.String(), nil
 }
 
+//func convertFretColumn(rows []music.Row, index int) {
+//	convertedColumn := make([]string, 0, len(rows))
+//	for i := range rows {
+//		if unicode.IsDigit(rune(rows[i].Data[index])) {
+//
+//		}
+//	}
+//}
+
 // convertFretsFromRow takes a single tab row and converts each fret number to the corresponding note.
 func convertFretsFromRow(row string, tuning music.Note) (string, error) {
 	b := strings.Builder{}
-	rowBytes := []byte(row) // Catches case of single \ being escaped.
+	rowBytes := []byte(row) // Bytes to catch case of single \ being escaped.
 
 	for i := 0; i < len(rowBytes); i++ {
 		if unicode.IsDigit(rune(rowBytes[i])) {
@@ -93,19 +108,38 @@ func validateInput(tab []string, tuning string) error {
 	numOfTabRows := len(tab)
 	numOfStrings := len(tuning)
 
-	if numOfTabRows < 2 {
-		return fmt.Errorf("invalid number of tab rows %d. need at least 2", len(tab))
+	if numOfTabRows == 0 {
+		return fmt.Errorf("invalid number of tab rows [%d]. need at least 1", len(tab))
 	}
 
-	if numOfStrings < 2 {
-		return fmt.Errorf("invalid tuning %s must have at least 2 notes", tuning)
+	if numOfStrings == 0 {
+		return fmt.Errorf("invalid tuning [%s] must have at least 1 note", tuning)
 	}
 
+	// Allow for multiple "sets" of tabs, grouped by numOfStrings. e.g. tuning if == EADGBE, then allow for 12 tab rows,
+	// representing 2 sets of 6 strings.
 	if numOfTabRows%numOfStrings != 0 {
-		return fmt.Errorf("number of strings %d not divisible by given number tab rows %d, check your input",
+		return fmt.Errorf("number of strings %d not divisible by given number tab rows %d",
 			numOfStrings,
 			numOfTabRows)
 	}
 
+	lowerBound := 0
+	upperBound := numOfStrings
+	var tabSet []string
+	for upperBound <= len(tab) {
+		tabSet = tab[lowerBound:upperBound]
+		expectedLength := len(tabSet[0])
+
+		for i := 1; i < len(tabSet); i++ {
+			if len(tabSet[i]) != expectedLength {
+				return fmt.Errorf("length of tab row [%s] is not the same as other rows in this group [%s]", tabSet[i], tabSet)
+			}
+		}
+
+		lowerBound = upperBound
+		upperBound += numOfStrings
+	}
+	// TODO check row lengths are the same
 	return nil
 }
